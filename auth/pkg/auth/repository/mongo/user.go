@@ -3,7 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"re-home/auth/pkg/models"
+	"re-home/models"
 
 	_ "github.com/go-sql-driver/mysql"
 	log "github.com/sirupsen/logrus"

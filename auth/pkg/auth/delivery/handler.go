@@ -3,7 +3,7 @@ package delivery
 import (
 	"net/http"
 	"re-home/auth/pkg/auth"
-	"re-home/auth/pkg/models"
+	"re-home/models"
 
 	"github.com/gin-gonic/gin"
 )

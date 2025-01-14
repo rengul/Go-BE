@@ -15,30 +15,39 @@ import (
 	"os/signal"
 	"re-home/auth/pkg/auth"
 	"re-home/auth/pkg/auth/delivery"
-	mysql "re-home/auth/pkg/auth/repository/mongo"
+	mysql "re-home/auth/pkg/auth/repository/mysql"
 	"re-home/auth/pkg/auth/usecase"
+	httpcons "re-home/consumption/delivery/http"
+	mysqlcons "re-home/consumption/repository/mysql"
+	cons "re-home/consumption/usecase"
+
 	"time"
 )
 
 type App struct {
-	httpServer *http.Server
-
-	authUseCase auth.UseCase
+	httpServer         *http.Server
+	consumptionUseCase cons.ConsumptionUseCase
+	authUseCase        auth.UseCase
 }
 
 func NewApp() *App {
 	db := initDB()
 
-	repository := mysql.NewUserRepository(db, "users")
+	userRepository := mysql.NewUserRepository(db)
+	consumptionRepository := mysqlcons.NewConsumptionRepository(db)
+
 	authUseCase := usecase.NewAuthorizer(
-		repository,
+		userRepository,
 		viper.GetString("auth.hash_salt"),
 		[]byte(viper.GetString("auth.signing_key")),
 		viper.GetDuration("auth.token_ttl")*time.Second,
 	)
 
+	consumptionUseCase := cons.NewConsumptionUseCase(consumptionRepository)
+
 	return &App{
-		authUseCase: authUseCase,
+		authUseCase:        authUseCase,
+		consumptionUseCase: *consumptionUseCase,
 	}
 }
 
@@ -52,8 +61,10 @@ func (a *App) Run(port string) error {
 	)
 
 	// Endpoints
-	api := router.Group("/auth")
+	authMiddleware := delivery.NewAuthMiddleware(a.authUseCase)
+	api := router.Group("/auth", authMiddleware)
 	delivery.RegisterHTTPEndpoints(api, a.authUseCase)
+	httpcons.RegisterHTTPEndpoints(api, a.consumptionUseCase)
 
 	// HTTP Server
 	a.httpServer = &http.Server{

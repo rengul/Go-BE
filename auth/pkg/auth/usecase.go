@@ -2,8 +2,10 @@ package auth
 
 import (
 	"context"
-	"re-home/auth/pkg/models"
+	"re-home/models"
 )
+
+const CtxUserKey = "user"
 
 type UseCase interface {
 	SignUp(ctx context.Context, user *models.User) error

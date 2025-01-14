@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	"re-home/auth/pkg/models"
+	"re-home/models"
 )
 
 type Repository interface {
