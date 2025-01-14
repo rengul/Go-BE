@@ -20,7 +20,6 @@ import (
 	httpcons "re-home/consumption/delivery/http"
 	mysqlcons "re-home/consumption/repository/mysql"
 	cons "re-home/consumption/usecase"
-
 	"time"
 )
 
@@ -60,10 +59,11 @@ func (a *App) Run(port string) error {
 		gin.Logger(),
 	)
 
+	delivery.RegisterHTTPEndpoints(router, a.authUseCase)
 	// Endpoints
 	authMiddleware := delivery.NewAuthMiddleware(a.authUseCase)
 	api := router.Group("/auth", authMiddleware)
-	delivery.RegisterHTTPEndpoints(api, a.authUseCase)
+
 	httpcons.RegisterHTTPEndpoints(api, a.consumptionUseCase)
 
 	// HTTP Server

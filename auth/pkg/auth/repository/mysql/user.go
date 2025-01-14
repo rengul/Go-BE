@@ -37,12 +37,13 @@ func (r *UserRepository) Get(ctx context.Context, username, password string) (*m
 	row := r.db.QueryRowContext(ctx, query, username, password)
 	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.Email)
 	if err != nil {
+		log.Println("Error fetching user: ", err)
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
 		log.Error("Error fetching user: ", err)
 		return nil, err
 	}
-
+	log.Println("User fetched: ", user)
 	return user, nil
 }

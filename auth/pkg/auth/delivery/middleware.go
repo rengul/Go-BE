@@ -2,9 +2,8 @@ package delivery
 
 import (
 	"net/http"
-	"strings"
-
 	"re-home/auth/pkg/auth"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )

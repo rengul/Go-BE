@@ -39,7 +39,7 @@ ORDER BY
 	var consumptions []*mod.Consumption
 	for rows.Next() {
 		var consumption mod.Consumption
-		err := rows.Scan(&consumption.Heating, &consumption.LastUpdate)
+		err := rows.Scan(&consumption.LastUpdate, &consumption.Heating)
 		if err != nil {
 			return nil, err
 		}

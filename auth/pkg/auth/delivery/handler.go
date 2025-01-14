@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"log"
 	"net/http"
 	"re-home/auth/pkg/auth"
 	"re-home/models"
@@ -66,12 +67,12 @@ func newSignInResponse(status, msg, token string) *signInResponse {
 }
 
 func (h *handler) signIn(c *gin.Context) {
+	log.Println("Starting the signIn...")
 	inp := new(models.User)
 	if err := c.BindJSON(inp); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-
 	token, err := h.useCase.SignIn(c.Request.Context(), inp)
 	if err != nil {
 		if err == auth.ErrInvalidAccessToken {

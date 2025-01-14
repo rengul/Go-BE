@@ -4,12 +4,18 @@ import (
 	"context"
 	"crypto/sha1"
 	"fmt"
+	"log"
 	"re-home/auth/pkg/auth"
 	"re-home/models"
 	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
 )
+
+type AuthClaims struct {
+	jwt.StandardClaims
+	User *models.User `json:"user"`
+}
 
 type Authorizer struct {
 	repo auth.Repository
@@ -43,27 +49,30 @@ func (a *Authorizer) SignIn(ctx context.Context, user *models.User) (string, err
 	pwd.Write([]byte(user.Password))
 	pwd.Write([]byte(a.hashSalt))
 	user.Password = fmt.Sprintf("%x", pwd.Sum(nil))
-
+	log.Println("Sign in user: ", user.Username)
 	user, err := a.repo.Get(ctx, user.Username, user.Password)
 	if err != nil {
 		return "", err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &auth.Claims{
+	claims := AuthClaims{
+		User: user,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: jwt.At(time.Now().Add(a.expireDuration)),
 			IssuedAt:  jwt.At(time.Now()),
 		},
-		User: user,
-	})
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString(a.signingKey)
 }
 
 func (a *Authorizer) ParseToken(ctx context.Context, accessToken string) (*models.User, error) {
-	token, err := jwt.ParseWithClaims(accessToken, &auth.Claims{}, func(token *jwt.Token) (interface{}, error) {
+	log.Println("Parse token: ", accessToken)
+	token, err := jwt.ParseWithClaims(accessToken, &AuthClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return a.signingKey, nil
 	})
@@ -72,7 +81,7 @@ func (a *Authorizer) ParseToken(ctx context.Context, accessToken string) (*model
 		return nil, err
 	}
 
-	if claims, ok := token.Claims.(*auth.Claims); ok && token.Valid {
+	if claims, ok := token.Claims.(*AuthClaims); ok && token.Valid {
 		return claims.User, nil
 	}
 
