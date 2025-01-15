@@ -1,11 +1,18 @@
 package delivery
 
 import (
+	"errors"
 	"net/http"
 	"re-home/auth/pkg/auth"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+)
+
+const (
+	authorizationHeader = "Authorization"
+	userCtx             = "id"
 )
 
 type AuthMiddleware struct {
@@ -43,9 +50,28 @@ func (m *AuthMiddleware) Handle(c *gin.Context) {
 			status = http.StatusUnauthorized
 		}
 
+		// if err == jwt.ErrTokenExpired {
+		// 	status = http.StatusUnauthorized
+		// }
+
 		c.AbortWithStatus(status)
 		return
 	}
 
 	c.Set(auth.CtxUserKey, user)
+
+}
+
+func getUserId(c *gin.Context) (string, error) {
+	id, ok := c.Get(userCtx)
+	if !ok {
+		return "", errors.New("user id not found")
+	}
+
+	idInt, ok := id.(int)
+	if !ok {
+		return "", errors.New("user id is not an integer")
+	}
+
+	return strconv.Itoa(idInt), nil
 }

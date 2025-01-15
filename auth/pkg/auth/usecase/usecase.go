@@ -14,7 +14,7 @@ import (
 
 type AuthClaims struct {
 	jwt.StandardClaims
-	User *models.User `json:"user"`
+	ID string `json:"Id"`
 }
 
 type Authorizer struct {
@@ -56,7 +56,7 @@ func (a *Authorizer) SignIn(ctx context.Context, user *models.User) (string, err
 	}
 
 	claims := AuthClaims{
-		User: user,
+		ID: user.ID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: jwt.At(time.Now().Add(a.expireDuration)),
 			IssuedAt:  jwt.At(time.Now()),
@@ -68,8 +68,7 @@ func (a *Authorizer) SignIn(ctx context.Context, user *models.User) (string, err
 	return token.SignedString(a.signingKey)
 }
 
-func (a *Authorizer) ParseToken(ctx context.Context, accessToken string) (*models.User, error) {
-	log.Println("Parse token: ", accessToken)
+func (a *Authorizer) ParseToken(ctx context.Context, accessToken string) (string, error) {
 	token, err := jwt.ParseWithClaims(accessToken, &AuthClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -78,12 +77,12 @@ func (a *Authorizer) ParseToken(ctx context.Context, accessToken string) (*model
 	})
 
 	if err != nil {
-		return nil, err
+		return "", auth.ErrInvalidAccessToken
 	}
 
 	if claims, ok := token.Claims.(*AuthClaims); ok && token.Valid {
-		return claims.User, nil
+		return claims.ID, nil
 	}
 
-	return nil, auth.ErrInvalidAccessToken
+	return "", auth.ErrInvalidAccessToken
 }

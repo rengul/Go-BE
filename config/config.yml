@@ -3,7 +3,7 @@ port: 8080
 auth:
   signing_key: "test"
   hash_salt: "rengul"
-  token_ttl: 120
+  token_ttl: 86400
 
 mongo:
   uri: "gouser:G1nW3bUs3r!@tcp(192.168.178.35:3306)/home?parseTime=true"

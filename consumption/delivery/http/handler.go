@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"re-home/auth/pkg/auth"
 	consumption "re-home/consumption/usecase"
-	"re-home/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +19,7 @@ func NewHandler(useCase consumption.ConsumptionUseCase) *Handler {
 }
 
 func (h *Handler) Get(c *gin.Context) {
-	user := c.MustGet(auth.CtxUserKey).(*models.User)
+	user := c.MustGet(auth.CtxUserKey).(string)
 
 	heating, err := h.useCase.GetConsumption(c.Request.Context(), user)
 	if err != nil {

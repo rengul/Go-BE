@@ -16,6 +16,6 @@ func NewConsumptionUseCase(ConsumptionRepo consumption.Repository) *ConsumptionU
 	}
 }
 
-func (c ConsumptionUseCase) GetConsumption(ctx context.Context, user *models.User) ([]*models.Consumption, error) {
-	return c.ConsumptionRepo.Get(ctx, user)
+func (c ConsumptionUseCase) GetConsumption(ctx context.Context, userId string) ([]*models.Consumption, error) {
+	return c.ConsumptionRepo.Get(ctx, userId)
 }

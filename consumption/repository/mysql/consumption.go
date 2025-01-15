@@ -17,7 +17,7 @@ func NewConsumptionRepository(db *sql.DB) *ConsumptionRepository {
 	}
 }
 
-func (r ConsumptionRepository) Get(ctx context.Context, user *models.User) ([]*models.Consumption, error) {
+func (r ConsumptionRepository) Get(ctx context.Context, userId string) ([]*models.Consumption, error) {
 	query := `SELECT 
 	DATE(lastupdate) AS lastupdate,
 	MAX(heating) - MIN(heating) AS heating	
