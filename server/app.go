@@ -60,9 +60,10 @@ func (a *App) Run(port string) error {
 	)
 
 	delivery.RegisterHTTPEndpoints(router, a.authUseCase)
+
 	// Endpoints
-	authMiddleware := delivery.NewAuthMiddleware(a.authUseCase)
-	api := router.Group("/auth", authMiddleware)
+	delivery.NewAuthMiddleware(a.authUseCase)
+	api := router.Group("/api")
 
 	httpcons.RegisterHTTPEndpoints(api, a.consumptionUseCase)
 

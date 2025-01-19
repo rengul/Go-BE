@@ -11,6 +11,6 @@ func RegisterHTTPEndpoints(router *gin.RouterGroup, uc usecase.ConsumptionUseCas
 
 	consumption := router.Group("/consumption")
 	{
-		consumption.GET("", h.Get)
+		consumption.GET("", h.GetConsumption)
 	}
 }
