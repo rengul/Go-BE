@@ -35,5 +35,5 @@ func (h *Handler) GetConsumption(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"heating": heating})
+	c.JSON(http.StatusOK, gin.H{"consumption": heating})
 }
