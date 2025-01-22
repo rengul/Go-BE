@@ -22,7 +22,7 @@ func NewHandler(useCase consumption.ConsumptionUseCase) *Handler {
 func (h *Handler) GetConsumption(c *gin.Context) {
 	//user := c.MustGet(auth.CtxUserKey).(string)
 
-	action := models.Action(strings.ToLower(c.Query("action")))
+	filter := models.Filter(strings.ToLower(c.Query("filter")))
 
 	// Valida l'azione
 	// if !action.IsValid() {
@@ -30,10 +30,10 @@ func (h *Handler) GetConsumption(c *gin.Context) {
 	// 	return
 	// }
 
-	heating, err := h.useCase.GetConsumption(c.Request.Context(), "", action)
+	data, err := h.useCase.GetConsumption(c.Request.Context(), "", filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"consumption": heating})
+	c.JSON(http.StatusOK, gin.H{"consumption": data})
 }

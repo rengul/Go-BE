@@ -6,5 +6,5 @@ import (
 )
 
 type UseCase interface {
-	GetConsumption(ctx context.Context, userId string, action models.Action) error
+	GetConsumption(ctx context.Context, userId string, filter models.Filter) error
 }

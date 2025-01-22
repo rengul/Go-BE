@@ -16,19 +16,8 @@ func NewConsumptionUseCase(ConsumptionRepo consumption.Repository) *ConsumptionU
 	}
 }
 
-func (c ConsumptionUseCase) GetConsumption(ctx context.Context, userId string, action models.Action) ([]*models.Consumption, error) {
-	if action == models.Heating {
-		return c.ConsumptionRepo.GetHeating(ctx, userId)
-	}
+func (c ConsumptionUseCase) GetConsumption(ctx context.Context, userId string, filter models.Filter) ([]*models.Consumption, error) {
 
-	if action == models.HotWater {
-		return c.ConsumptionRepo.GetHotWater(ctx, userId)
-	}
-
-	if action == models.ColdWater {
-		return c.ConsumptionRepo.GetColdWater(ctx, userId)
-	}
-
-	return c.ConsumptionRepo.GetAllConsumption(ctx, userId)
+	return c.ConsumptionRepo.GetAllConsumption(ctx, userId, filter)
 
 }
