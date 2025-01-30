@@ -7,22 +7,20 @@ import (
 	mod "re-home/models"
 )
 
-const yearConsumptionQuery = `SELECT     
-    lastupdate,
-	hotwater,
-	coldwater,
-	heating,
-    cooling,        
-	YEAR(lastupdate) AS year,
-    MONTH(lastupdate) AS month
-FROM consumption c1
-WHERE lastupdate = (
-    SELECT MAX(lastupdate) 
-    FROM consumption c2
-    WHERE YEAR(c2.lastupdate) = YEAR(c1.lastupdate)
-      AND MONTH(c2.lastupdate) = MONTH(c1.lastupdate)
-)
-ORDER BY year, month;`
+const yearConsumptionQuery = `SELECT 	
+	DATE(lastupdate) AS lastupdate,
+    MAX(hotwater) - MIN(hotwater) AS hotwater,
+	MAX(coldwater) - MIN(coldwater) AS coldwater,
+	MAX(heating) - MIN(heating) AS heating,
+    MAX(cooling) - MIN(cooling) AS cooling,            
+    YEAR(lastupdate) AS year,
+    MONTH(lastupdate) AS month    
+FROM 
+    consumption
+GROUP BY 
+    DATE_FORMAT(lastupdate, '%Y-%m')
+ORDER BY 
+    month desc;`
 
 const monthConsumptionQuery = `SELECT 
 	DATE(lastupdate) AS lastupdate,
