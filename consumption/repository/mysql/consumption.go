@@ -20,7 +20,7 @@ FROM
 GROUP BY 
     DATE_FORMAT(lastupdate, '%Y-%m')
 ORDER BY 
-    month desc;`
+    YEAR ASC, MONTH ASC;`
 
 const monthConsumptionQuery = `SELECT 
 	DATE(lastupdate) AS lastupdate,
