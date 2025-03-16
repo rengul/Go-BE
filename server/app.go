@@ -94,7 +94,7 @@ func (a *App) Run(port string) error {
 }
 
 func initDB() *sql.DB {
-	db, err := sql.Open("mysql", "gouser:G1nW3bUs3r!@tcp(192.168.178.35:3306)/home?parseTime=true")
+	db, err := sql.Open("mysql", "rengul:Duc4t12025!@tcp(192.168.178.27:3306)/home?parseTime=true")
 	if err != nil {
 		log.Fatalf("Error occurred while connecting to MySQL: %v", err)
 	}
